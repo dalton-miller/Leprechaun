@@ -1,0 +1,36 @@
+# Swift/SwiftUI
+.build/
+*.xcodeproj/
+*.xcworkspace/
+DerivedData/
+Packages/
+*.playground/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-*
+
+# Secrets / Keys
+.env
+.env.*
+*.key
+*.pem
+*.p12
+
+# Build artifacts (SPM release builds)
+.build/release/
+
+# rclone binaries (downloaded at build time via `make download-rclone`)
+Sources/Leprechaun/Resources/rclone-darwin-*
+
+# rclone zips (binaries are Resources, zips are not needed)
+rclone-*.zip

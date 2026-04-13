@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>Leprechaun</string>
+    <key>CFBundleDisplayName</key>
+    <string>Leprechaun</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.backupthing.app</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
+    <key>CFBundleExecutable</key>
+    <string>Leprechaun</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2026 Leprechaun. All rights reserved.</string>
+
+    <!-- Menu bar app (hides Dock icon) — set to true if you want a menu-bar-only app -->
+    <key>LSUIElement</key>
+    <false/>
+
+    <!-- Full Disk Access for reading source folders -->
+    <key>NSFullDiskAccessUsageDescription</key>
+    <string>Leprechaun needs access to read your files for backup purposes.</string>
+
+    <!-- Notifications -->
+    <key>NSUserNotificationUsageDescription</key>
+    <string>Notify you when a backup completes or fails.</string>
+</dict>
+</plist>

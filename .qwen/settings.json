@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(marending.dev)",
+      "WebFetch(github.com)",
+      "WebFetch(digitalzoomstudio.net)",
+      "WebFetch(pkg.go.dev)",
+      "WebFetch(swiftdevjournal.com)",
+      "WebFetch(iainmclaren.com)",
+      "WebFetch(rclone.org)",
+      "WebFetch(hextrap.com)",
+      "Bash(swift *)"
+    ]
+  },
+  "$version": 3
+}

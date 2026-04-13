@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build Release DMG
+    runs-on: macos-14
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+
+      - name: Download rclone
+        run: make download-rclone
+
+      - name: Build release
+        run: swift build --configuration release
+
+      - name: Package DMG
+        run: ./package.sh
+
+      - name: Verify DMG
+        run: |
+          DMG=$(ls .build/release/Leprechaun-*.dmg | head -1)
+          echo "DMG_PATH=$DMG" >> "$GITHUB_ENV"
+          test -f "$DMG" && echo "✓ DMG exists: $DMG" || exit 1
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.DMG_PATH }}
+
+      - name: Create Homebrew formula (optional)
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}"
+          DMG_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/Leprechaun-${VERSION}.dmg"
+          echo "Formula URL: ${DMG_URL}"
+          # Upload as artifact for Homebrew tap
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
