@@ -1,4 +1,5 @@
 import SwiftUI
+@MainActor
 
 struct EditBackupView: View {
     @Environment(\.dismiss) private var dismiss
@@ -200,7 +201,6 @@ struct EditBackupView: View {
 
     // MARK: - Actions
 
-    @MainActor
     private func save() {
         task.name = name
         task.sourcePath = sourcePath

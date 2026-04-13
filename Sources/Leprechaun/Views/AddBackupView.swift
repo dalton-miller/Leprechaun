@@ -1,4 +1,5 @@
 import SwiftUI
+@MainActor
 
 struct AddBackupView: View {
     @Environment(\.dismiss) private var dismiss

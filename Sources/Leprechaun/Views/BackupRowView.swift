@@ -1,4 +1,5 @@
 import SwiftUI
+@MainActor
 
 struct BackupRowView: View {
     let task: BackupTask

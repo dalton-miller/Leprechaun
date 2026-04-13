@@ -2,8 +2,8 @@ import Foundation
 import Observation
 
 /// Shared application state holding the list of backup tasks.
-@Observable
 @MainActor
+@Observable
 final class AppState {
     static let shared = AppState()
 
@@ -66,37 +66,29 @@ final class AppState {
         let logFilePath = StorageService.logPath(for: task)
         let startTime = Date()
 
-        let work = Task.detached {
+        let work = Task { @MainActor in
             do {
-                _ = try await self.rcloneService.run(
+                let service = RcloneService()
+                _ = try await service.run(
                     sourcePath: sourcePath,
                     destinationPath: destinationPath,
                     mode: copyMode,
                     logFilePath: logFilePath
                 ) { progress in
-                    self.updateProgress(taskID: taskID, progress: progress)
+                    guard let task = AppState.shared.tasks.first(where: { $0.id == taskID }) else { return }
+                    if let pct = progress.percentage {
+                        task.transferProgress = min(pct, 1.0)
+                    }
+                    task.transferSpeed = progress.speed ?? ""
+                    task.transferETA = progress.eta ?? ""
                 }
-
-                await MainActor.run {
-                    self.finishTask(taskID: taskID, startTime: startTime, error: nil)
-                }
+                AppState.shared.finishTask(taskID: taskID, startTime: startTime, error: nil)
             } catch {
-                await MainActor.run {
-                    self.finishTask(taskID: taskID, startTime: startTime, error: error.localizedDescription)
-                }
+                AppState.shared.finishTask(taskID: taskID, startTime: startTime, error: error.localizedDescription)
             }
         }
 
         runningTasks[task.id] = work
-    }
-
-    private func updateProgress(taskID: UUID, progress: RcloneService.RcloneProgress) {
-        guard let task = tasks.first(where: { $0.id == taskID }) else { return }
-        if let pct = progress.percentage {
-            task.transferProgress = min(pct, 1.0)
-        }
-        task.transferSpeed = progress.speed ?? ""
-        task.transferETA = progress.eta ?? ""
     }
 
     private func finishTask(taskID: UUID, startTime: Date, error: String?) {
@@ -118,14 +110,10 @@ final class AppState {
         } else {
             task.status = .success
             NotificationService.postSuccess(for: task.name)
-            // Auto-reset to idle after 5 seconds
-            let taskID = taskID
-            Task {
+            Task { @MainActor in
                 try await Task.sleep(for: .seconds(5))
-                await MainActor.run {
-                    if self.tasks.first(where: { $0.id == taskID })?.status == .success {
-                        self.tasks.first(where: { $0.id == taskID })?.status = .idle
-                    }
+                if self.tasks.first(where: { $0.id == taskID })?.status == .success {
+                    self.tasks.first(where: { $0.id == taskID })?.status = .idle
                 }
             }
         }

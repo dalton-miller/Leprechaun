@@ -15,10 +15,14 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "Leprechaun",
+            dependencies: [],
             path: "Sources/Leprechaun",
             resources: [
                 .copy("Resources/rclone-darwin-arm64"),
                 .copy("Resources/rclone-darwin-x86_64"),
+            ],
+            swiftSettings: [
+                .swiftLanguageMode(.v6),
             ]
         ),
     ]

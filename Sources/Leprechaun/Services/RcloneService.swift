@@ -1,4 +1,5 @@
 import Foundation
+
 @preconcurrency import os
 
 /// Manages rclone subprocess execution for backup operations.
@@ -31,7 +32,7 @@ final class RcloneService {
         destinationPath: String,
         mode: CopyMode,
         logFilePath: String,
-        onProgress: (@MainActor (RcloneProgress) -> Void)? = nil
+        onProgress: ((RcloneProgress) -> Void)? = nil
     ) async throws -> RcloneResult {
         guard let rclonePath = ResourceLocator.rclonePath else {
             throw RcloneError.binaryNotFound
@@ -64,16 +65,15 @@ final class RcloneService {
         }
 
         // Read output asynchronously
+        let handler = self.progressHandler
         let outputTask = Task {
             var output = ""
             let fileHandle = stdoutPipe.fileHandleForReading
             do {
                 for try await line in fileHandle.bytes.lines {
                     output += line + "\n"
-                    if let progress = self.parseProgress(from: line) {
-                        await MainActor.run {
-                            onProgress?(progress)
-                        }
+                    if let progress = Self.parseProgress(from: line) {
+                        handler?(progress)
                     }
                 }
             } catch {
@@ -138,7 +138,7 @@ final class RcloneService {
     }
 
     /// Parses rclone progress output for status updates.
-    private func parseProgress(from line: String) -> RcloneProgress? {
+    static func parseProgress(from line: String) -> RcloneProgress? {
         // rclone with --use-json-log outputs JSON to stderr
         // We look for JSON objects containing transfer stats
         guard let data = line.data(using: .utf8) else { return nil }
@@ -157,7 +157,7 @@ final class RcloneService {
         return nil
     }
 
-    private func parseJSONStats(_ json: [String: Any]) -> RcloneProgress? {
+    static func parseJSONStats(_ json: [String: Any]) -> RcloneProgress? {
         // rclone JSON log format varies; look for common keys
         var progress = RcloneProgress()
 
@@ -193,7 +193,7 @@ final class RcloneService {
         return nil
     }
 
-    private func parseTextProgress(from line: String) -> RcloneProgress? {
+    static func parseTextProgress(from line: String) -> RcloneProgress? {
         // Text format examples:
         // "Transferred: 1.234 GiB / 5.678 GiB, 22%, 12.345 MiB/s, ETA 5m30s"
         // "Transferred: 100% / 100%, 0/s, ETA -"
@@ -212,7 +212,7 @@ final class RcloneService {
         return progress.percentage != nil ? progress : nil
     }
 
-    private func formatBytesPerSecond(_ bytes: Double) -> String {
+    static func formatBytesPerSecond(_ bytes: Double) -> String {
         let units = ["B/s", "KiB/s", "MiB/s", "GiB/s"]
         var value = bytes
         var unitIndex = 0
@@ -223,7 +223,7 @@ final class RcloneService {
         return String(format: "%.1f %@", value, units[unitIndex])
     }
 
-    private func formatSeconds(_ seconds: Double) -> String {
+    static func formatSeconds(_ seconds: Double) -> String {
         if seconds < 60 {
             return "\(Int(seconds))s"
         }

@@ -1,4 +1,5 @@
 import SwiftUI
+@MainActor
 
 struct SettingsView: View {
     @State private var selectedTab = 0

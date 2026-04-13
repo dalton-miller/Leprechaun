@@ -1,11 +1,8 @@
 import SwiftUI
+@MainActor
 
 struct BackupListView: View {
-    @State private var appState: AppState
-
-    init() {
-        _appState = State(initialValue: AppState.shared)
-    }
+    @State private var appState = AppState.shared
 
     var body: some View {
         VStack(spacing: 0) {
