@@ -1,5 +1,5 @@
 import Foundation
-import os
+@preconcurrency import os
 
 /// Handles SMB mount detection and mounting using native macOS mechanisms.
 enum VolumeMountService {

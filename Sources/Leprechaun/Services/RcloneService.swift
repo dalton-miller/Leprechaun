@@ -1,5 +1,5 @@
 import Foundation
-import os
+@preconcurrency import os
 
 /// Manages rclone subprocess execution for backup operations.
 @MainActor

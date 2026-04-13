@@ -1,5 +1,5 @@
 import Foundation
-import os
+@preconcurrency import os
 
 /// Persists and loads backup task configurations.
 @MainActor

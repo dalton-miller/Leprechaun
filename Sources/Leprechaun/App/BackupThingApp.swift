@@ -3,7 +3,11 @@ import AppKit
 
 @main
 struct LeprechaunApp: App {
-    @State private var appState = AppState.shared
+    @State private var appState: AppState
+
+    init() {
+        _appState = State(initialValue: AppState.shared)
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -34,7 +38,11 @@ struct LeprechaunApp: App {
 
 /// Content shown in the menu bar extra dropdown.
 struct MenuBarContentView: View {
-    @State private var appState = AppState.shared
+    @State private var appState: AppState
+
+    init() {
+        _appState = State(initialValue: AppState.shared)
+    }
 
     var body: some View {
         Group {

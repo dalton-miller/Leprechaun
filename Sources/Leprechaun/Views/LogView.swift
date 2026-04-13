@@ -41,6 +41,7 @@ struct LogView: View {
         .onAppear { loadLog() }
     }
 
+    @MainActor
     private func loadLog() {
         isLoading = true
         let logPath = StorageService.logPath(for: task)

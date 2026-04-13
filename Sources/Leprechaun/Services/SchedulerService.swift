@@ -1,5 +1,5 @@
 import Foundation
-import os
+@preconcurrency import os
 
 /// Manages launchd LaunchAgents for scheduled backup tasks.
 @MainActor

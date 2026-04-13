@@ -2,7 +2,7 @@ import SwiftUI
 
 struct EditBackupView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var appState = AppState.shared
+    @State private var appState: AppState
 
     @Bindable var task: BackupTask
 
@@ -16,6 +16,7 @@ struct EditBackupView: View {
     @State private var isShowingSourcePicker = false
 
     init(task: BackupTask) {
+        _appState = State(initialValue: AppState.shared)
         self.task = task
         _name = State(initialValue: task.name)
         _sourcePath = State(initialValue: task.sourcePath)
@@ -199,6 +200,7 @@ struct EditBackupView: View {
 
     // MARK: - Actions
 
+    @MainActor
     private func save() {
         task.name = name
         task.sourcePath = sourcePath
