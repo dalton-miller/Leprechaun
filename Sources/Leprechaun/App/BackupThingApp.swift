@@ -38,16 +38,10 @@ struct LeprechaunApp: App {
 
 /// Content shown in the menu bar extra dropdown.
 struct MenuBarContentView: View {
-    @State private var appState: AppState
-
-    init() {
-        _appState = State(initialValue: AppState.shared)
-    }
-
     var body: some View {
         Group {
             // Running tasks
-            ForEach(appState.tasks.filter({ $0.status == .running })) { task in
+            ForEach(AppState.shared.tasks.filter({ $0.status == .running })) { task in
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         Image(systemName: "arrow.triangle.2.circlepath")
@@ -67,20 +61,20 @@ struct MenuBarContentView: View {
                 }
             }
 
-            if appState.tasks.contains(where: { $0.status == .running }) {
+            if AppState.shared.tasks.contains(where: { $0.status == .running }) {
                 Divider()
             }
 
             // Quick actions per task
-            ForEach(appState.tasks) { task in
+            ForEach(AppState.shared.tasks) { task in
                 Button {
-                    appState.runTask(task)
+                    AppState.shared.runTask(task)
                 } label: {
                     Label("Run \"\(task.name)\"", systemImage: "play.fill")
                 }
             }
 
-            if !appState.tasks.isEmpty {
+            if !AppState.shared.tasks.isEmpty {
                 Divider()
             }
 

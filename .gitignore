@@ -34,3 +34,4 @@ Sources/Leprechaun/Resources/rclone-darwin-*
 
 # rclone zips (binaries are Resources, zips are not needed)
 rclone-*.zip
+logs.txt
