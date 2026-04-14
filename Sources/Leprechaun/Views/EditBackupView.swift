@@ -17,6 +17,7 @@ struct EditBackupView: View {
     @State private var isShowingDestinationPicker = false
 
     init(task: BackupTask) {
+        _appState = State(initialValue: AppState.shared)
         self.task = task
         _name = State(initialValue: task.name)
         _sourcePath = State(initialValue: task.sourcePath)
