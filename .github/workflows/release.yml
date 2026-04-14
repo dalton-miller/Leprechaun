@@ -7,17 +7,12 @@ on:
 jobs:
   build:
     name: Build Release DMG
-    runs-on: macos-14
+    runs-on: macos-26
     timeout-minutes: 30
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Swift
-        uses: swift-actions/setup-swift@v3
-        with:
-          swift-version: "6.2.1"
+        uses: actions/checkout@v5
 
       - name: Download rclone
         run: make download-rclone
@@ -65,6 +60,6 @@ jobs:
           test -f "$DMG" && echo "✓ DMG exists: $DMG" || exit 1
 
       - name: Upload to Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ${{ env.DMG_PATH }}
