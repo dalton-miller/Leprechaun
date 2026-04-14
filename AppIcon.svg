@@ -1,34 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- Background: rounded square -->
-  <rect x="40" y="40" width="944" height="944" rx="200" ry="200" fill="url(#bg)"/>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- macOS style rounded background -->
+  <rect width="512" height="512" rx="110" fill="#15803d"/>
 
-  <!-- Shield / backup icon -->
-  <g transform="translate(512,512) scale(0.8)">
-    <!-- Shield body -->
-    <path d="M0,-200 L160,-140 L160,60 C160,160 80,240 0,280 C-80,240 -160,160 -160,60 L-160,-140 Z"
-          fill="url(#shield)" stroke="#fff" stroke-width="12" stroke-linejoin="round"/>
+  <!-- Clover Group -->
+  <g transform="translate(256, 253)">
+    <!-- Leaf Template: A narrower teardrop shape -->
+    <defs>
+      <path id="leaf" d="M0 0 C -30 -20 -35 -75 0 -80 C 35 -75 30 -20 0 0" />
+    </defs>
 
-    <!-- Arrow circling (sync arrow) -->
-    <path d="M-120,-20 A140,140 0 0,1 100,-60" fill="none" stroke="#fff" stroke-width="28"
-          stroke-linecap="round"/>
-    <!-- Arrow head -->
-    <path d="M70,-90 L110,-55 L80,-30" fill="none" stroke="#fff" stroke-width="28"
-          stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Leaves (drawn first so they are behind the stem) -->
+    <!-- Top Leaf -->
+    <use href="#leaf" transform="rotate(-90)" fill="#ffffff" />
+
+    <!-- Bottom Right Leaf -->
+    <use href="#leaf" transform="rotate(30)" fill="#ffffff" fill-opacity="0.9" />
+
+    <!-- Bottom Left Leaf -->
+    <use href="#leaf" transform="rotate(150)" fill="#ffffff" fill-opacity="0.9" />
+
+    <!-- The Stem (drawn last to cover the leaf junctions) -->
+    <path d="M0 -5 Q -8 40 0 85 Q 8 40 0 -5" fill="#ffffff" />
   </g>
-
-  <!-- Subtle top highlight -->
-  <ellipse cx="512" cy="140" rx="380" ry="60" fill="rgba(255,255,255,0.08)"/>
-
-  <defs>
-    <!-- Background gradient: emerald green -->
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#065f46"/>
-      <stop offset="100%" stop-color="#042f2e"/>
-    </linearGradient>
-    <!-- Shield gradient: lighter emerald -->
-    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#34d399"/>
-      <stop offset="100%" stop-color="#059669"/>
-    </linearGradient>
-  </defs>
 </svg>

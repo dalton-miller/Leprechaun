@@ -24,10 +24,9 @@
 - [x] Renamed project to Leprechaun
 
 ## Remaining
-- [ ] App icon (SVG template created at `AppIcon.svg` — needs 16–1024px iconset for macOS)
+- [ ] New backup source picker doesn't pop up a Finder window
+- [ ] Schedule defaults to 1/1/1 2:00AM
+- [x] App icon (SVG template created at `AppIcon.svg` — needs 16–1024px iconset for macOS)
 - [ ] "Next run" preview text on BackupRowView
 - [ ] Backup encryption settings (rclone crypt remote)
-- [ ] Test against real NAS/remote path
-- [ ] Homebrew cask (optional, for easy updates)
-- [ ] Codeberg CI for automated releases
 - [ ] Sparkle framework for in-app updates

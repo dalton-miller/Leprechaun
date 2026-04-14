@@ -14,8 +14,6 @@ struct AddBackupView: View {
     @State private var schedule: Schedule = .daily(hour: 2, minute: 0)
     @State private var copyMode: CopyMode = .copy
 
-    @State private var isShowingSourcePicker = false
-    @State private var isShowingDestinationPicker = false
 
     var body: some View {
         NavigationStack {
@@ -29,7 +27,9 @@ struct AddBackupView: View {
                         TextField("Path", text: $sourcePath)
                             .textFieldStyle(.roundedBorder)
                         Button("Browse…") {
-                            isShowingSourcePicker = true
+                            if let url = FilePicker.selectDirectory() {
+                                sourcePath = url.path
+                            }
                         }
                     }
                 }
@@ -39,7 +39,9 @@ struct AddBackupView: View {
                         TextField("Path", text: $destinationPath)
                             .textFieldStyle(.roundedBorder)
                         Button("Browse…") {
-                            isShowingDestinationPicker = true
+                            if let url = FilePicker.selectDirectory() {
+                                destinationPath = url.path
+                            }
                         }
                     }
                     Text("Browse to a mounted NAS volume, local folder, or cloud mount.")
@@ -102,24 +104,6 @@ struct AddBackupView: View {
                     .disabled(!isValid)
                 }
             }
-            .fileImporter(
-                isPresented: $isShowingSourcePicker,
-                allowedContentTypes: [.directory],
-                allowsMultipleSelection: false
-            ) { result in
-                if case .success(let urls) = result, let url = urls.first {
-                    sourcePath = url.path
-                }
-            }
-            .fileImporter(
-                isPresented: $isShowingDestinationPicker,
-                allowedContentTypes: [.directory],
-                allowsMultipleSelection: false
-            ) { result in
-                if case .success(let urls) = result, let url = urls.first {
-                    destinationPath = url.path
-                }
-            }
         }
     }
 
@@ -154,10 +138,11 @@ struct AddBackupView: View {
 
     private var dailyTimeBinding: Binding<Date>? {
         guard case .daily(let hour, let minute) = schedule else { return nil }
-        var components = DateComponents()
+        let now = Date()
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: now)
         components.hour = hour
         components.minute = minute
-        let date = Calendar.current.date(from: components) ?? Date()
+        let date = Calendar.current.date(from: components) ?? now
         return Binding(
             get: { date },
             set: { newDate in
