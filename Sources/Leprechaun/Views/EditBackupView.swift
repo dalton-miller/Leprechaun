@@ -2,7 +2,7 @@ import SwiftUI
 
 struct EditBackupView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var appState = AppState.shared
+    @State private var appState: AppState
 
     @Bindable var task: BackupTask
 

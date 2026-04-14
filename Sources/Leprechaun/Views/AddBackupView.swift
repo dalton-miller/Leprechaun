@@ -2,7 +2,11 @@ import SwiftUI
 
 struct AddBackupView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var appState = AppState.shared
+    @State private var appState: AppState
+
+    init() {
+        _appState = State(initialValue: AppState.shared)
+    }
 
     @State private var name: String = ""
     @State private var sourcePath: String = ""
