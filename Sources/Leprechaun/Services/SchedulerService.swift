@@ -32,7 +32,6 @@ enum SchedulerService {
     // MARK: - Wrapper Script
 
     /// Installs the backup wrapper script at a known location.
-    /// The wrapper handles mount check → mount if needed → run rclone → log output.
     static func installWrapperScript() {
         let scriptURL = wrapperScriptPath()
 
@@ -46,55 +45,20 @@ enum SchedulerService {
         #   $2 = Destination path
         #   $3 = Mode (copy or sync)
         #   $4 = Log file path
-        #   $5 = SMB server (optional, empty if local)
-        #   $6 = SMB share name (optional)
-        #   $7 = SMB username (optional)
-        #   $8 = SMB password from keychain (optional)
 
         SOURCE="$1"
         DEST="$2"
         MODE="$3"
         LOGFILE="$4"
-        SMB_SERVER="$5"
-        SMB_SHARE="$6"
-        SMB_USER="$7"
-        SMB_PASS="$8"
-
-        # Handle SMB mount if needed
-        if [ -n "$SMB_SERVER" ] && [ -n "$SMB_SHARE" ]; then
-            MOUNT_POINT="/Volumes/$SMB_SHARE"
-            if [ ! -d "$MOUNT_POINT" ]; then
-                echo "$(date): Mounting smb://$SMB_USER@$SMB_SERVER/$SMB_SHARE..." >> "$LOGFILE"
-                if [ -n "$SMB_PASS" ]; then
-                    /sbin/mount_smbfs -N "smb://$SMB_USER:$SMB_PASS@$SMB_SERVER/$SMB_SHARE" "$MOUNT_POINT" 2>> "$LOGFILE"
-                else
-                    /sbin/mount_smbfs "smb://$SMB_USER@$SMB_SERVER/$SMB_SHARE" "$MOUNT_POINT" 2>> "$LOGFILE"
-                fi
-
-                if [ $? -ne 0 ]; then
-                    echo "$(date): Failed to mount SMB share" >> "$LOGFILE"
-                    exit 1
-                fi
-
-                # Wait for mount to be ready (up to 30 seconds)
-                WAITED=0
-                while [ ! -d "$MOUNT_POINT" ] && [ $WAITED -lt 30 ]; do
-                    sleep 1
-                    WAITED=$((WAITED + 1))
-                done
-
-                if [ $WAITED -ge 30 ] && [ ! -d "$MOUNT_POINT" ]; then
-                    echo "$(date): Mount timeout after 30s" >> "$LOGFILE"
-                    exit 1
-                fi
-                echo "$(date): Mount successful" >> "$LOGFILE"
-            fi
-
-            # Update destination to use mount point
-            DEST="$MOUNT_POINT/$SMB_SHARE${DEST#*:/}"
-        fi
 
         echo "$(date): Starting backup ($MODE): $SOURCE -> $DEST" >> "$LOGFILE"
+
+        # Check that the destination path exists (volume should be mounted)
+        if [ ! -d "$DEST" ]; then
+            echo "$(date): Destination does not exist: $DEST" >> "$LOGFILE"
+            echo "  Make sure the destination volume is mounted (e.g. via Login Items)." >> "$LOGFILE"
+            exit 1
+        fi
 
         # Run rclone
         RCLONE_PATH="{RCLONE_PATH_PLACEHOLDER}"
@@ -153,10 +117,6 @@ enum SchedulerService {
                 task.destinationPath,
                 task.copyMode.rawValue,
                 StorageService.logPath(for: task),
-                "",  // SMB server (empty for local)
-                "",  // SMB share
-                "",  // SMB username
-                "",  // SMB password
             ],
             "StartCalendarInterval": scheduleDict,
             "StandardOutPath": StorageService.logDirectory.appending(path: "\(task.id.uuidString).out").path,

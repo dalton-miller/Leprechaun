@@ -23,9 +23,12 @@ A simple macOS backup app that syncs folders to a NAS or cloud storage using [rc
 
 ## Installation
 
-1. Download the latest `.dmg` from [Releases](https://github.com/YOUR_USERNAME/leprechaun/releases)
+1. Download the latest `.dmg` from [Releases](https://github.com/dalton-miller/Leprechaun/releases)
 2. Open the DMG and drag **Leprechaun** to your Applications folder
-3. Open the app — you may need to right-click → Open the first time (Gatekeeper)
+3. Open the app — the first time macOS may warn that the app can't be checked for malicious software:
+   - Go to **System Settings > Privacy & Security** and click **Open Anyway**, or
+   - Right-click the app and select **Open** (bypasses Gatekeeper for this one launch)
+   - Or run: `xattr -cr /Applications/Leprechaun.app`
 
 ## Building from source
 

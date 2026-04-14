@@ -1,30 +1,19 @@
 import SwiftUI
-@MainActor
 
 struct SettingsView: View {
-    @State private var selectedTab = 0
-
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView {
             GeneralSettingsView()
                 .tabItem {
                     Label("General", systemImage: "gear")
                 }
-                .tag(0)
-
-            RemoteSettingsView()
-                .tabItem {
-                    Label("Remotes", systemImage: "server.rack")
-                }
-                .tag(1)
 
             EncryptionSettingsView()
                 .tabItem {
                     Label("Encryption", systemImage: "lock.fill")
                 }
-                .tag(2)
         }
-        .frame(width: 450)
+        .frame(width: 450, height: 300)
     }
 }
 
@@ -42,11 +31,8 @@ struct GeneralSettingsView: View {
                 }
             }
 
-            Section("SMB / NAS") {
-                Button("Mount NAS in Finder…") {
-                    KeychainService.promptMountInFinder(server: "nas.local", share: "backups")
-                }
-                Text("If your NAS credentials aren't saved, mount the share in Finder first. We'll read them from the Keychain.")
+            Section("Connecting to a NAS") {
+                Text("When setting up a backup, browse to your mounted NAS volume as the destination folder. If it's not mounted yet, open it in Finder first — Finder will handle authentication and mounting.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -55,47 +41,6 @@ struct GeneralSettingsView: View {
                 Button("Open Logs Folder") {
                     NSWorkspace.shared.open(StorageService.logDirectory)
                 }
-            }
-        }
-        .formStyle(.grouped)
-    }
-}
-
-// MARK: - Remote Settings
-
-struct RemoteSettingsView: View {
-    @State private var server: String = ""
-    @State private var share: String = ""
-    @State private var username: String = ""
-    @State private var password: String = ""
-
-    var body: some View {
-        Form {
-            Section("SMB Connection") {
-                TextField("Server (e.g. nas.local)", text: $server)
-                TextField("Share name (e.g. backups)", text: $share)
-                TextField("Username", text: $username)
-                SecureField("Password", text: $password)
-            }
-
-            Section {
-                Button("Save to Keychain") {
-                    let context = KeychainService.SMBContext(
-                        server: server,
-                        share: share,
-                        username: username,
-                        password: password
-                    )
-                    if KeychainService.saveCredentials(context) {
-                        // TODO: Show success alert
-                    }
-                }
-                .buttonStyle(.borderedProminent)
-
-                Button("Remove from Keychain") {
-                    _ = KeychainService.deleteCredentials(server: server, username: username)
-                }
-                .buttonStyle(.bordered)
             }
         }
         .formStyle(.grouped)

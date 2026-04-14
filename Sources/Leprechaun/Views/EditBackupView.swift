@@ -1,9 +1,8 @@
 import SwiftUI
-@MainActor
 
 struct EditBackupView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var appState: AppState
+    @State private var appState = AppState.shared
 
     @Bindable var task: BackupTask
 
@@ -15,9 +14,9 @@ struct EditBackupView: View {
     @State private var isEnabled: Bool
 
     @State private var isShowingSourcePicker = false
+    @State private var isShowingDestinationPicker = false
 
     init(task: BackupTask) {
-        _appState = State(initialValue: AppState.shared)
         self.task = task
         _name = State(initialValue: task.name)
         _sourcePath = State(initialValue: task.sourcePath)
@@ -34,9 +33,9 @@ struct EditBackupView: View {
                     TextField("Backup name", text: $name)
                 }
 
-                Section("Source") {
+                Section("Source Folder") {
                     HStack {
-                        TextField("Folder path", text: $sourcePath)
+                        TextField("Path", text: $sourcePath)
                             .textFieldStyle(.roundedBorder)
                         Button("Browse…") {
                             isShowingSourcePicker = true
@@ -44,9 +43,14 @@ struct EditBackupView: View {
                     }
                 }
 
-                Section("Destination") {
-                    TextField("Destination path", text: $destinationPath)
-                        .textFieldStyle(.roundedBorder)
+                Section("Destination Folder") {
+                    HStack {
+                        TextField("Path", text: $destinationPath)
+                            .textFieldStyle(.roundedBorder)
+                        Button("Browse…") {
+                            isShowingDestinationPicker = true
+                        }
+                    }
                 }
 
                 Section("Schedule") {
@@ -137,6 +141,15 @@ struct EditBackupView: View {
             ) { result in
                 if case .success(let urls) = result, let url = urls.first {
                     sourcePath = url.path
+                }
+            }
+            .fileImporter(
+                isPresented: $isShowingDestinationPicker,
+                allowedContentTypes: [.directory],
+                allowsMultipleSelection: false
+            ) { result in
+                if case .success(let urls) = result, let url = urls.first {
+                    destinationPath = url.path
                 }
             }
         }

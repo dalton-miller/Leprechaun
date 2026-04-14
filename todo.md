@@ -25,7 +25,6 @@
 
 ## Remaining
 - [ ] App icon (SVG template created at `AppIcon.svg` — needs 16–1024px iconset for macOS)
-- [ ] Wire SMB connection info through to launchd wrapper script
 - [ ] "Next run" preview text on BackupRowView
 - [ ] Backup encryption settings (rclone crypt remote)
 - [ ] Test against real NAS/remote path

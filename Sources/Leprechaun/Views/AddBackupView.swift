@@ -1,33 +1,28 @@
 import SwiftUI
-@MainActor
 
 struct AddBackupView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var appState: AppState
-
-    init() {
-        _appState = State(initialValue: AppState.shared)
-    }
+    @State private var appState = AppState.shared
 
     @State private var name: String = ""
     @State private var sourcePath: String = ""
     @State private var destinationPath: String = ""
     @State private var schedule: Schedule = .daily(hour: 2, minute: 0)
     @State private var copyMode: CopyMode = .copy
-    @State private var useMirrorWarningAcknowledged = false
 
     @State private var isShowingSourcePicker = false
+    @State private var isShowingDestinationPicker = false
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("Name") {
-                    TextField("Backup name (e.g. Documents)", text: $name)
+                    TextField("e.g. Documents", text: $name)
                 }
 
-                Section("Source") {
+                Section("Source Folder") {
                     HStack {
-                        TextField("Folder path", text: $sourcePath)
+                        TextField("Path", text: $sourcePath)
                             .textFieldStyle(.roundedBorder)
                         Button("Browse…") {
                             isShowingSourcePicker = true
@@ -35,10 +30,15 @@ struct AddBackupView: View {
                     }
                 }
 
-                Section("Destination") {
-                    TextField("Destination path (e.g. /Volumes/NAS/backups/docs)", text: $destinationPath)
-                        .textFieldStyle(.roundedBorder)
-                    Text("Use a mounted SMB volume or local path.")
+                Section("Destination Folder") {
+                    HStack {
+                        TextField("Path", text: $destinationPath)
+                            .textFieldStyle(.roundedBorder)
+                        Button("Browse…") {
+                            isShowingDestinationPicker = true
+                        }
+                    }
+                    Text("Browse to a mounted NAS volume, local folder, or cloud mount.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -107,6 +107,15 @@ struct AddBackupView: View {
                     sourcePath = url.path
                 }
             }
+            .fileImporter(
+                isPresented: $isShowingDestinationPicker,
+                allowedContentTypes: [.directory],
+                allowsMultipleSelection: false
+            ) { result in
+                if case .success(let urls) = result, let url = urls.first {
+                    destinationPath = url.path
+                }
+            }
         }
     }
 
@@ -118,7 +127,6 @@ struct AddBackupView: View {
 
     private var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
-    // Schedule bindings
     private var scheduleBinding: Binding<Int> {
         Binding(
             get: {
